@@ -1,13 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Acer
- */
+import java.net.UnknownHostException;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import java.util.Arrays;
+import com.mongodb.Block;
+import com.mongodb.client.MongoCursor;
+import static com.mongodb.client.model.Filters.*;
+import com.mongodb.client.result.DeleteResult;
+import static com.mongodb.client.model.Updates.*;
+import com.mongodb.client.result.UpdateResult;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 public class Register extends javax.swing.JFrame {
 
     /**
@@ -32,9 +39,9 @@ public class Register extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         User = new javax.swing.JLabel();
         Pass = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jPasswordField2 = new javax.swing.JPasswordField();
+        txtUser = new javax.swing.JTextField();
+        pass = new javax.swing.JPasswordField();
+        conPass = new javax.swing.JPasswordField();
         ConPass = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox<>();
@@ -50,6 +57,11 @@ public class Register extends javax.swing.JFrame {
 
         jButton2.setFont(new java.awt.Font("Angsana New", 0, 24)); // NOI18N
         jButton2.setText("Submit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setFont(new java.awt.Font("Angsana New", 0, 24)); // NOI18N
         jButton3.setText("Clear");
@@ -60,11 +72,14 @@ public class Register extends javax.swing.JFrame {
         Pass.setFont(new java.awt.Font("Angsana New", 0, 24)); // NOI18N
         Pass.setText("Password");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtUser.setName("txtUser"); // NOI18N
+        txtUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtUserActionPerformed(evt);
             }
         });
+
+        pass.setName("pass"); // NOI18N
 
         ConPass.setFont(new java.awt.Font("Angsana New", 0, 24)); // NOI18N
         ConPass.setText("Comfirm Password");
@@ -109,12 +124,12 @@ public class Register extends javax.swing.JFrame {
                                     .addComponent(Pass))
                                 .addGap(76, 76, 76)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(ConPass)
                                 .addGap(18, 18, 18)
-                                .addComponent(jPasswordField2)))))
+                                .addComponent(conPass)))))
                 .addContainerGap(140, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -131,18 +146,18 @@ public class Register extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(User)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(Pass)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ConPass)
-                    .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(conPass, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,12 +166,49 @@ public class Register extends javax.swing.JFrame {
                 .addGap(61, 61, 61))
         );
 
+        pass.getAccessibleContext().setAccessibleName("");
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtUserActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       MongoClientURI uri  = new MongoClientURI("mongodb://Nantiya:0954044119n@ds243812.mlab.com:43812/nantiya");
+        MongoClient client = new MongoClient(uri);
+        MongoDatabase db = client.getDatabase(uri.getDatabase());  
+        MongoCollection<Document> user = db.getCollection("User");
+        
+        List<Document> seedData = new ArrayList<Document>();
+        
+        if (txtUser.getText().isEmpty() && pass.getText().isEmpty() && conPass.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "โปรดใส่ Username , Password และ Confirm Password");
+
+        } else if (txtUser.getText().isEmpty() || pass.getText().isEmpty() || conPass.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "โปรดใส่ Username , Password และ Confirm Password");
+
+        } else if (pass.getText().equals(conPass.getText())) {
+        seedData.add(new Document("UserName",txtUser.getText())
+                .append("Password", pass.getText())
+                .append("Confirm Password",conPass.getText())
+                
+        ); 
+        user.insertMany(seedData);
+        JOptionPane.showMessageDialog(this, "successfully");
+            txtUser.setText(null);
+            pass.setText(null);
+            conPass.setText(null);
+        
+         client.close(); 
+         
+        }else{
+            JOptionPane.showMessageDialog(this, "Password Incorect");
+            
+        }
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,14 +249,14 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JLabel ConPass;
     private javax.swing.JLabel Pass;
     private javax.swing.JLabel User;
+    private javax.swing.JPasswordField conPass;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField pass;
+    private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 }

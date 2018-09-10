@@ -16,24 +16,16 @@ public class OX {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-     java.awt.EventQueue.invokeLater(new Runnable() {
-          public void run () {
-               new Register().setVisible(true);
-           }
-       });
+    
         
 // TODO code application logic here
     }
 
-    private static class Register {
+    //private static class Register {
 
-        public Register() {
-        }
+       // public Register() {
+       // }
 
-        private void setVisible(boolean b) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
+        
+      //  }
     
-}
